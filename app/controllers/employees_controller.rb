@@ -2,12 +2,12 @@ class EmployeesController < ApplicationController
   URL = "http://localhost:3001/api/v1/employees"
   HEADER = { "Accept" => "application/json" }
   def index
-    @employees = Unirest.get("#{URL}.json").body
+    @employees = Employee.all
     render :index
   end
 
   def show
-    @employee = Unirest.get("#{URL}/#{params[:id]}.json").body
+    @employee = Employee.find_by(id: params[:id])
     render :show
   end
 
@@ -16,35 +16,28 @@ class EmployeesController < ApplicationController
   end
 
   def create
-    employee = Unirest.post("#{URL}.json", headers: HEADER,
-         parameters: { first_name: params[:first_name],
-                       last_name: params[:last_name],
-                       email: params[:email] }
-                      ).body
-    if employee["errors"]
-      flash[:warning] = employee["errors"]
-      redirect_to "/employees/new"
-    else
-      redirect_to "/employees/#{employee['id']}"
-    end
+    employee = Employee.create(first_name: params[:first_name],
+                               last_name: params[:last_name],
+                               email: params[:email])
+    redirect_to "/employees/#{employee.id}"
   end
 
   def edit
-    @employee = Unirest.get("#{URL}/#{params[:id]}.json").body
+    @employee = Employee.find_by(id: params[:id])
     render :edit
   end
 
   def update
-    employee = Unirest.patch("#{URL}/#{params[:id]}.json", headers: HEADER,
-         parameters: { first_name: params[:first_name],
+    employee = Employee.find_by(id: params[:id])
+    employee.update(first_name: params[:first_name],
                        last_name: params[:last_name],
-                       email: params[:email] }).body
-    redirect_to "/employees/#{employee['id']}"
+                       email: params[:email])
+    redirect_to "/employees/#{employee.id}"
   end
 
   def destroy
-    employee = Unirest.delete("#{URL}/#{params[:id]}.json", headers: HEADER).body
-    flash[:success] = employee["message"]
+    employee = Employee.find_by(id: params[:id])
+    employee.destroy
     redirect_to "/employees"
   end
 end
