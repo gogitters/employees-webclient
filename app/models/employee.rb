@@ -1,8 +1,7 @@
 class Employee
   attr_accessor :id, :first_name, :last_name, :email
 
-  URL = "http://localhost:3001/api/v1/employees"
-  HEADER = { "Accept" => "application/json", "X-User-Email" => "sami@gmail.com", "Authorization" => "Token token=purple_hippo" }
+  HEADER = { "Accept" => "application/json", "X-User-Email" => ENV['EMAIL'], "Authorization" => "Token token=#{ENV['API_KEY']}" }
 
   def initialize(hash)
     @id = hash["id"]
@@ -12,7 +11,7 @@ class Employee
   end
 
   def self.all
-    api_employees = Unirest.get("#{URL}.json", headers: HEADER).body
+    api_employees = Unirest.get("#{ENV['URL']}.json", headers: HEADER).body
     array_employees = []
     api_employees.each do |employee|
       array_employees << Employee.new(employee)
@@ -25,22 +24,22 @@ class Employee
   end
 
   def self.find_by(input)
-    hash = Unirest.get("#{URL}/#{input[:id]}.json", headers: HEADER).body
+    hash = Unirest.get("#{ENV['URL']}/#{input[:id]}.json", headers: HEADER).body
     Employee.new(hash)
   end
 
   def self.create(input)
-    employee = Unirest.post("#{URL}.json", headers: HEADER,
+    employee = Unirest.post("#{ENV['URL']}.json", headers: HEADER,
          parameters: input).body
     Employee.new(employee)
   end
 
   def update(input)
-    employee = Unirest.patch("#{URL}/#{self.id}.json", headers: HEADER, parameters: input).body
+    employee = Unirest.patch("#{ENV['URL']}/#{self.id}.json", headers: HEADER, parameters: input).body
     Employee.new(employee)
   end
 
   def destroy
-    Unirest.delete("#{URL}/#{self.id}.json", headers: HEADER).body
+    Unirest.delete("#{ENV['URL']}/#{self.id}.json", headers: HEADER).body
   end
 end
