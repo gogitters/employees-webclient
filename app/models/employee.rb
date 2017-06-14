@@ -2,7 +2,7 @@ class Employee
   attr_accessor :id, :first_name, :last_name, :email
 
   URL = "http://localhost:3001/api/v1/employees"
-  HEADER = { "Accept" => "application/json" }
+  HEADER = { "Accept" => "application/json", "X-User-Email" => "sami@gmail.com", "Authorization" => "Token token=purple_hippo" }
 
   def initialize(hash)
     @id = hash["id"]
@@ -12,7 +12,7 @@ class Employee
   end
 
   def self.all
-    api_employees = Unirest.get("#{URL}.json").body
+    api_employees = Unirest.get("#{URL}.json", headers: HEADER).body
     array_employees = []
     api_employees.each do |employee|
       array_employees << Employee.new(employee)
@@ -25,7 +25,7 @@ class Employee
   end
 
   def self.find_by(input)
-    hash = Unirest.get("#{URL}/#{input[:id]}.json").body
+    hash = Unirest.get("#{URL}/#{input[:id]}.json", headers: HEADER).body
     Employee.new(hash)
   end
 

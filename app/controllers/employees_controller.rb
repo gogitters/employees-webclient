@@ -1,6 +1,6 @@
 class EmployeesController < ApplicationController
   URL = "http://localhost:3001/api/v1/employees"
-  HEADER = { "Accept" => "application/json" }
+  HEADER = { "Accept" => "application/json", "X-User-Email" => "sami@gmail.com", "Authorization" => "Token token=purple_hippo" }
   def index
     @employees = Employee.all
     render :index
